@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Age Category Checker</title>
+  <style>
+    :root {
+      --bg-color: #1e1e2f;
+      --text-color: white;
+      --card-color: #2c2c3e;
+    }
+
+    body.light-mode {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --card-color: white;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      text-align: center;
+      padding: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      background: var(--card-color);
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      width: 90%;
+      border-radius: 10px;
+      border: none;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .fade-in {
+      opacity: 1 !important;
+    }
+
+    .theme-toggle {
+      margin-top: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      background: none;
+      border: 1px solid var(--text-color);
+      color: var(--text-color);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Age Category Checker</h2>
+    <input type="text" id="name" placeholder="Enter your name" oninput="validateName(this)">
+    <input type="number" id="age" placeholder="Enter your age">
+    <button onclick="checkCategory()">Check</button>
+    <div id="result"></div>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+  </div>
+
+  
+
+    <script>
+    window.onload = () => {
+      const storedName = localStorage.getItem("name");
+      const storedAge = localStorage.getItem("age");
+      const theme = localStorage.getItem("theme");
+
+      if (storedName) document.getElementById("name").value = storedName;
+      if (storedAge) document.getElementById("age").value = storedAge;
+      if (theme === "light") document.body.classList.add("light-mode");
+    };
+
+    function checkCategory() {
+      const name = document.getElementById("name").value.trim();
+      const ageInput = document.getElementById("age").value;
+      const age = parseInt(ageInput);
+      const result = document.getElementById("result");
+
+      // 1. Fixed Validation: Ensure age is a number and within 1-120
+      if (!name || isNaN(age) || age <= 0 || age > 120) {
+        result.style.color = "red";
+        result.textContent = "Please enter a valid name and age (1-120)!";
+        result.classList.add("fade-in");
+        return;
+      }
+
+      localStorage.setItem("name", name);
+      localStorage.setItem("age", age);
+
+      let category = "";
+      
+      // 2. Fixed Logic Order: Check from most specific to most general
+      if (age <= 12) {
+        category = "Child";
+        result.style.color = "#00FFFF";
+      } else if (age <= 17) {
+        category = "Minor";
+        result.style.color = "#FFD700";
+      } else if (age > 100) {
+        // This must come BEFORE the general "Senior/Adult" check
+        category = "Legend (Century Club!)"; 
+        result.style.color = "#FFD705";
+      } else if (age >= 60) {
+        category = "Senior Citizen";
+        result.style.color = "#00FF00";
+      } else {
+        category = "Adult";
+        result.style.color = "#00FF00";
+      }
+
+      result.textContent = `Hello ${name}! You are a/an ${category}.`;
+      result.classList.remove("fade-in"); 
+      setTimeout(() => result.classList.add("fade-in"), 50);
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light-mode");
+      localStorage.setItem("theme", document.body.classList.contains("light-mode") ? "light" : "dark");
+    }
+  </script>
+</body>
+</html>
